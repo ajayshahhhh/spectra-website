@@ -419,8 +419,10 @@ body {
 
 
 <!-- ── S4 DEMO ── -->
-<section class="slide" id="s4" data-label="Demo">
-  <div style="display:flex;align-items:center;gap:5vw;width:100%;max-width:64rem">
+<section class="slide" id="s4" data-label="Demo" style="position:relative;overflow:hidden;">
+
+  <!-- COLLAPSED: simple view -->
+  <div id="s4-collapsed" style="display:flex;align-items:center;gap:5vw;width:100%;max-width:64rem;transition:opacity .38s ease;">
     <div style="flex:1;display:flex;flex-direction:column;align-items:flex-start;gap:1.8rem">
       <div class="lb"><div class="ld"></div>Live Demo</div>
       <div class="dh" style="text-align:left">See <span class="s">SPECTRA</span>Live<br><em style="color:var(--amber);font-style:normal">in real time.</em></div>
@@ -433,8 +435,47 @@ body {
         <div class="ds"><span class="dsv">NPU</span><span class="dsl">on-device</span></div>
       </div>
     </div>
-    <div style="flex:1;display:flex;flex-direction:column;gap:1rem">
-      <div style="font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.2em;color:var(--amber);text-transform:uppercase;margin-bottom:.2rem">ARKitScenes Validation Benchmarks</div>
+    <!-- Simple accuracy visual -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:1.2rem;">
+      <div style="font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.2em;color:var(--amber);text-transform:uppercase;">How accurate is it?</div>
+      <div style="font-family:'Playfair Display',serif;font-size:clamp(1rem,1.4vw,1.3rem);color:var(--cream);line-height:1.4;margin-bottom:.4rem;">
+        <strong style="font-size:clamp(2rem,3.5vw,3.2rem);color:var(--amber);">99.1%</strong> of pixels<br>within ±25% of true depth.
+      </div>
+      <!-- Bar comparison -->
+      <div style="display:flex;flex-direction:column;gap:.7rem;">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--cdim);margin-bottom:.3rem;"><span>Raw LiDAR (bicubic)</span><span>94.8%</span></div>
+          <div style="height:10px;background:var(--gray);border-radius:5px;overflow:hidden;"><div style="height:100%;width:94.8%;background:var(--cdim);border-radius:5px;"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--cdim);margin-bottom:.3rem;"><span>Marigold-DC (best diffusion baseline)</span><span>97.3%</span></div>
+          <div style="height:10px;background:var(--gray);border-radius:5px;overflow:hidden;"><div style="height:100%;width:97.3%;background:#6e8fbf;border-radius:5px;"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:.6rem;color:var(--amber);margin-bottom:.3rem;"><span><strong>SPECTRANet (ours)</strong></span><span><strong>99.1%</strong></span></div>
+          <div style="height:10px;background:var(--gray);border-radius:5px;overflow:hidden;"><div style="height:100%;width:99.1%;background:var(--amber);border-radius:5px;"></div></div>
+        </div>
+      </div>
+      <div style="font-size:.78rem;color:var(--cdim);font-weight:300;line-height:1.6;">
+        δ1 accuracy — fraction of pixels within 25% of ground truth depth. Higher is better.
+      </div>
+      <button onclick="toggleS4()" style="font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;background:none;border:1px solid var(--adim);color:var(--amber);padding:.45rem 1.1rem;border-radius:6px;align-self:flex-start;">⊕ See full benchmark table</button>
+    </div>
+  </div>
+
+  <!-- EXPANDED: full table -->
+  <div id="s4-expanded" style="position:absolute;inset:5vh 5vw;opacity:0;pointer-events:none;transition:opacity .38s ease;display:flex;align-items:center;gap:5vw;">
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:1.4rem;">
+      <div style="font-family:'DM Mono',monospace;font-size:.6rem;color:var(--amber);letter-spacing:.22em;text-transform:uppercase;">Full Benchmarks</div>
+      <div style="font-size:1rem;line-height:1.8;color:var(--cdim);font-weight:300;">
+        Evaluated on ARKitScenes validation set against Faro laser scanner ground truth.<br><br>
+        <strong style="color:var(--cream)">RMSE / MAE</strong> — average error in meters. Lower is better.<br>
+        <strong style="color:var(--cream)">δ1 / δ2 / δ3</strong> — % of pixels within ±25% / ±56% / ±95% of true depth. Higher is better.
+      </div>
+      <button onclick="toggleS4()" style="font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;background:var(--amber);color:var(--bg);border:none;padding:.55rem 1.3rem;border-radius:6px;align-self:flex-start;font-weight:700;">⊖ Collapse</button>
+    </div>
+    <div style="flex:1.3;display:flex;flex-direction:column;gap:1rem;">
+      <div style="font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.2em;color:var(--amber);text-transform:uppercase;">ARKitScenes Validation Benchmarks</div>
       <table class="btable">
         <tr><th>Method</th><th>RMSE↓</th><th>MAE↓</th><th>δ1↑</th><th>δ2↑</th><th>δ3↑</th></tr>
         <tr><td>Bicubic baseline</td><td>0.2171</td><td>0.0730</td><td>0.9476</td><td>0.9550</td><td>0.9630</td></tr>
@@ -444,11 +485,11 @@ body {
         <tr class="ours"><td><span class="s">SPECTRA</span>Net (ours)</td><td>0.0552</td><td>0.0216</td><td>0.9909</td><td>0.9973</td><td>0.9991</td></tr>
       </table>
       <div style="font-family:'DM Mono',monospace;font-size:.58rem;color:var(--cdim);line-height:1.7">
-        δ1=0.9909 → <strong style="color:var(--cream)">99.1% of pixels within ±25% of ground truth.</strong><br>
-        75% lower RMSE vs bicubic · 1.8× better than Marigold-DC on RMSE · 3.4× better MAE.
+        75% lower RMSE vs bicubic · 1.8× better than Marigold-DC on RMSE · 3.4× better MAE
       </div>
     </div>
   </div>
+
 </section>
 
 <!-- ── S5 ROBOTICS ── -->
@@ -537,7 +578,7 @@ body {
     <div class="ml lit">ships with a LiDAR scanner.</div>
     <div class="mdv"></div>
     <div class="ml">Apple's component cost: <em>under $25.</em><span class="ci" style="font-size:.45rem"> [2]</span></div>
-    <div class="ml">The same sensor standalone: <em>$10,000.</em><span class="ci" style="font-size:.45rem"> [1]</span></div>
+    <div class="ml">A commerical sensor costs: <em>$10,000.</em><span class="ci" style="font-size:.45rem"> [1]</span></div>
     <div class="mdv"></div>
     <div class="ml lit">The bottleneck was never the sensor.</div>
     <div class="ml lit">It was the software to make sparse depth usable.</div>
@@ -662,6 +703,21 @@ const AI={
   rh:'<strong>Residual Head</strong> — <span class="s">SPECTRA</span>Net predicts a correction Δ, not absolute depth: <code>out = bicubic_norm + 0.2 × Δ</code>. Final Conv2d zero-initialized — training starts stable and only learns what the naive upsample gets wrong.',
   out:'<strong>Dense Metric Depth</strong> — <code>768×1024</code> float32, 0.5–10m range. Multiply <code>pred_norm × 10.0</code> for meters. Exported as CoreML MultiArray, ~2MB. Sharp at boundaries, metric-accurate where LiDAR confidence is high.'
 };
+function toggleS4(){
+  const col = document.getElementById('s4-collapsed');
+  const exp = document.getElementById('s4-expanded');
+  const isOpen = exp.classList.contains('s4-open');
+  if(!isOpen){
+    col.style.opacity='0'; col.style.pointerEvents='none';
+    exp.style.opacity='1'; exp.style.pointerEvents='all';
+    exp.classList.add('s4-open');
+  } else {
+    col.style.opacity='1'; col.style.pointerEvents='all';
+    exp.style.opacity='0'; exp.style.pointerEvents='none';
+    exp.classList.remove('s4-open');
+  }
+}
+
 function ac(el){
   document.querySelectorAll('[data-k]').forEach(e=>e.classList.remove('lit'));
   el.classList.add('lit');
